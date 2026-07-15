@@ -36,27 +36,43 @@ def turn_off():
 
 hours = float(os.environ["HOURS"])
 heat_breaks = os.environ["HEAT_BREAKS"].lower() == "true"
+charge_block_minutes = float(os.environ.get("CHARGE_BLOCK_MINUTES", "15"))
+cooldown_minutes = float(os.environ.get("COOLDOWN_MINUTES", "2"))
 total_minutes = hours * 60
+
+if charge_block_minutes <= 0:
+    charge_block_minutes = 15
+
+if cooldown_minutes < 0:
+    cooldown_minutes = 0
+
+print(f"Charge target: {hours} hours", flush=True)
+print(f"Heat breaks: {heat_breaks}", flush=True)
+print(f"Charge block: {charge_block_minutes} min", flush=True)
+print(f"Cooldown: {cooldown_minutes} min", flush=True)
 
 if not heat_breaks:
     turn_on()
     time.sleep(total_minutes * 60)
     turn_off()
 else:
-    cycles = int(total_minutes // 15)
+    remaining_minutes = total_minutes
+    cycle = 1
 
-    if cycles == 0:
+    while remaining_minutes > 0:
+        this_block = min(charge_block_minutes, remaining_minutes)
+
+        print(f"Cycle {cycle}: charging for {this_block:.1f} min", flush=True)
         turn_on()
-        time.sleep(total_minutes * 60)
+        time.sleep(this_block * 60)
         turn_off()
-    else:
-        for i in range(cycles):
-            print(f"Cycle {i + 1} of {cycles}", flush=True)
-            turn_on()
-            time.sleep(15 * 60)
-            turn_off()
-            if i < cycles - 1:
-                print("Heat break (2 min)...", flush=True)
-                time.sleep(2 * 60)
+
+        remaining_minutes -= this_block
+
+        if remaining_minutes > 0 and cooldown_minutes > 0:
+            print(f"Cooldown break ({cooldown_minutes:.1f} min)...", flush=True)
+            time.sleep(cooldown_minutes * 60)
+
+        cycle += 1
 
 print("Charging complete.", flush=True)
