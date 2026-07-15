@@ -1,8 +1,11 @@
 import os
 import time
-import ssl
-import certifi
-ssl._create_default_https_context = lambda: ssl.create_default_context(cafile=certifi.where())
+import requests
+from requests import Session
+_orig_request = Session.request
+Session.request = lambda self, *a, **kw: _orig_request(self, *a, **{**kw, "verify": False})
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from wyze_sdk import Client
 
 client = Client(
