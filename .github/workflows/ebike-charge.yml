@@ -30,4 +30,7 @@ jobs:
           WYZE_KEY_ID: ${{ secrets.WYZE_KEY_ID }}
           HOURS: ${{ inputs.hours }}
           HEAT_BREAKS: ${{ inputs.heat_breaks }}
+          PYTHONHTTPSVERIFY: "0"
+          CURL_CA_BUNDLE: ""
+          REQUESTS_CA_BUNDLE: ""
         run: python charge.py
