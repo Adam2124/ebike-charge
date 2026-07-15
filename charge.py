@@ -16,23 +16,38 @@ PLUG_MODEL = "WLPP1CFH"
 
 def get_token():
     url = "https://auth-prod.api.wyze.com/api/user/login"
-    payload = {
-        "email": WYZE_EMAIL,
-        "password": hashlib.md5(hashlib.md5(WYZE_PASSWORD.encode()).hexdigest().encode()).hexdigest()
-    }
     headers = {
         "apikey": WYZE_API_KEY,
         "keyid": WYZE_KEY_ID,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "User-Agent": "wyze_developer_api"
     }
-    response = requests.post(url, json=payload, headers=headers, verify=False)
-    response.raise_for_status()
-    data = response.json()
-    if "access_token" in data:
-        return data["access_token"]
-    if "data" in data and "access_token" in data["data"]:
-        return data["data"]["access_token"]
-    raise RuntimeError(f"Could not find access token in Wyze response: {data}")
+
+    password_options = [
+        WYZE_PASSWORD,
+        hashlib.md5(hashlib.md5(WYZE_PASSWORD.encode()).hexdigest().encode()).hexdigest()
+    ]
+
+    last_response_text = ""
+
+    for password in password_options:
+        payload = {
+            "email": WYZE_EMAIL,
+            "password": password
+        }
+
+        response = requests.post(url, json=payload, headers=headers, verify=False)
+        last_response_text = response.text
+
+        if response.status_code == 200:
+            data = response.json()
+            if "access_token" in data:
+                return data["access_token"]
+            if "data" in data and "access_token" in data["data"]:
+                return data["data"]["access_token"]
+            raise RuntimeError(f"Could not find access token in Wyze response: {data}")
+
+    raise RuntimeError(f"Wyze login failed. Last response: {last_response_text}")
 
 def set_plug(token, state):
     url = "https://api.wyzecam.com/app/v2/device/set_property"
