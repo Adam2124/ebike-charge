@@ -19,6 +19,10 @@ on:
         description: "Minutes to cool down between charge blocks"
         required: true
         default: "2"
+      action:
+        description: "charge or off"
+        required: true
+        default: "charge"
 
 jobs:
   charge:
@@ -36,6 +40,7 @@ jobs:
           WYZE_PASSWORD: ${{ secrets.WYZE_PASSWORD }}
           WYZE_API_KEY: ${{ secrets.WYZE_API_KEY }}
           WYZE_KEY_ID: ${{ secrets.WYZE_KEY_ID }}
+          ACTION: ${{ inputs.action }}
           HOURS: ${{ inputs.hours }}
           HEAT_BREAKS: ${{ inputs.heat_breaks }}
           CHARGE_BLOCK_MINUTES: ${{ inputs.charge_block_minutes }}

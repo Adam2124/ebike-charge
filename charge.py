@@ -52,6 +52,13 @@ atexit.register(safe_turn_off)
 signal.signal(signal.SIGTERM, handle_shutdown)
 signal.signal(signal.SIGINT, handle_shutdown)
 
+action = os.environ.get("ACTION", "charge").lower()
+
+if action == "off":
+    print("Emergency OFF action requested.", flush=True)
+    safe_turn_off()
+    sys.exit(0)
+
 hours = float(os.environ["HOURS"])
 heat_breaks = os.environ["HEAT_BREAKS"].lower() == "true"
 charge_block_minutes = float(os.environ.get("CHARGE_BLOCK_MINUTES", "15"))
