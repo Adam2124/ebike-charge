@@ -1,0 +1,33 @@
+name: E-Bike Charger
+
+on:
+  workflow_dispatch:
+    inputs:
+      hours:
+        description: "Hours to charge"
+        required: true
+        default: "2"
+      heat_breaks:
+        description: "2-min heat break every 15 min?"
+        type: boolean
+        default: true
+
+jobs:
+  charge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Run charge cycle
+        env:
+          WYZE_EMAIL: ${{ secrets.WYZE_EMAIL }}
+          WYZE_PASSWORD: ${{ secrets.WYZE_PASSWORD }}
+          WYZE_API_KEY: ${{ secrets.WYZE_API_KEY }}
+          WYZE_KEY_ID: ${{ secrets.WYZE_KEY_ID }}
+          HOURS: ${{ inputs.hours }}
+          HEAT_BREAKS: ${{ inputs.heat_breaks }}
+        run: python charge.py
