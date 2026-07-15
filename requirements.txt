@@ -1,1 +1,3 @@
-requests  
+wyze-sdk
+requests
+urllib3  
