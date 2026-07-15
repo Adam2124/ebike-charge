@@ -1,5 +1,8 @@
 import os
 import time
+import signal
+import sys
+import atexit
 import requests
 import urllib3
 from requests import Session
@@ -33,6 +36,21 @@ def turn_on():
 def turn_off():
     client.plugs.turn_off(device_mac=PLUG_MAC, device_model=PLUG_MODEL)
     print("Plug OFF", flush=True)
+
+def safe_turn_off():
+    try:
+        turn_off()
+    except Exception as err:
+        print(f"Failed to turn plug off safely: {err}", flush=True)
+
+def handle_shutdown(signum, frame):
+    print("Shutdown/cancel detected. Turning plug OFF before exiting...", flush=True)
+    safe_turn_off()
+    sys.exit(1)
+
+atexit.register(safe_turn_off)
+signal.signal(signal.SIGTERM, handle_shutdown)
+signal.signal(signal.SIGINT, handle_shutdown)
 
 hours = float(os.environ["HOURS"])
 heat_breaks = os.environ["HEAT_BREAKS"].lower() == "true"
