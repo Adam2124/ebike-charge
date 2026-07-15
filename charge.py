@@ -1,5 +1,8 @@
 import os
 import time
+import ssl
+import certifi
+ssl._create_default_https_context = lambda: ssl.create_default_context(cafile=certifi.where())
 from wyze_sdk import Client
 
 client = Client(
