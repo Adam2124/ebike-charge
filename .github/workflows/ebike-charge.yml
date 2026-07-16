@@ -24,14 +24,14 @@ on:
         required: true
         default: "charge"
       delay_seconds:
-        description: "Seconds to wait before starting charge (0 = start immediately)"
+        description: "Cloud-side delay in seconds before starting charge (keeps working if phone/app disconnects)"
         required: false
         default: "0"
 
 jobs:
   charge:
     runs-on: ubuntu-latest
-    timeout-minutes: 350
+    timeout-minutes: 420
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
