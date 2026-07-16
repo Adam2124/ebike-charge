@@ -23,6 +23,14 @@ on:
         description: "charge or off"
         required: true
         default: "charge"
+      delay_seconds:
+        description: "Seconds to wait before starting charge (0 = start immediately)"
+        required: false
+        default: "0"
+      delay_seconds:
+        description: "Seconds to wait before starting charge (0 = start immediately)"
+        required: false
+        default: "0"
 
 jobs:
   charge:
@@ -45,6 +53,8 @@ jobs:
           HEAT_BREAKS: ${{ inputs.heat_breaks }}
           CHARGE_BLOCK_MINUTES: ${{ inputs.charge_block_minutes }}
           COOLDOWN_MINUTES: ${{ inputs.cooldown_minutes }}
+          DELAY_SECONDS: ${{ inputs.delay_seconds }}
+          DELAY_SECONDS: ${{ inputs.delay_seconds }}
           PYTHONHTTPSVERIFY: "0"
           CURL_CA_BUNDLE: ""
           REQUESTS_CA_BUNDLE: ""

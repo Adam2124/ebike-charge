@@ -59,6 +59,12 @@ if action == "off":
     safe_turn_off()
     sys.exit(0)
 
+delay_seconds = int(os.environ.get("DELAY_SECONDS", "0"))
+if delay_seconds > 0:
+    print(f"Delay start: waiting {delay_seconds} seconds ({delay_seconds/60:.1f} min) before charging...", flush=True)
+    time.sleep(delay_seconds)
+    print("Delay complete. Starting charge now.", flush=True)
+
 hours = float(os.environ["HOURS"])
 heat_breaks = os.environ["HEAT_BREAKS"].lower() == "true"
 charge_block_minutes = float(os.environ.get("CHARGE_BLOCK_MINUTES", "15"))
